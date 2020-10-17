@@ -79,7 +79,7 @@
             Вы можете установить свою стоимость от 75.4₽ до 7542.7₽</p>
         <div>
           <v-checkbox
-            v-model="checkbox"
+            v-model="freeForecast"
             label="Опубликовать прогноз бесплатно"
           ></v-checkbox>
         </div>
@@ -89,7 +89,7 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="yellow" flat @click="dialog = false">
+          <v-btn color="yellow" flat @click="addPrognoz">
             Добавить прогноз
           </v-btn>
           <v-btn color="white" flat @click="dialog = false">
@@ -107,7 +107,7 @@ export default {
   props: ['odds', 'nameOdds'],
   data () {
     return {
-      checkbox: false,
+      freeForecast: false,
       cost: 150,
       dialog: false,
       itemsOdds: [],
@@ -359,9 +359,31 @@ export default {
     }
   },
   methods: {
+    /**
+    * @description Функция изменения процента
+    */
     chnProcent () {
       const proc = parseFloat(this.valProcent.substring(0, this.valProcent.indexOf('%')))
       this.summaPoPrtocent = 10000 * proc / 100
+    },
+    /**
+    * @description Функция добавления прогноза
+    */
+    async addPrognoz () {
+      // Формиуем прогноз для отправки на бэк
+      const forecast = {
+        oddsId: this.odds.id,
+        freeForecast: this.freeForecast,
+        cost: this.cost,
+        oddDate: this.odds.Odd_date,
+        summaPoPrtocent: this.summaPoPrtocent,
+        comment: this.comment
+      }
+      console.log('forecast ===============================> ', forecast)
+      /* eslint-disable no-debugger */
+      debugger
+      const rc = await this.$axios.$post('/api/KaperForecast', JSON.stringify(forecast))
+      if (rc) { this.dialog = false }
     }
   }
 }
